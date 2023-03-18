@@ -20,7 +20,8 @@ if (!empty($_POST['username']) && !empty($_POST['pwd'])) {
 
 ?>
 <title>Sistema de chat en vivo con Ajax, PHP y MySQL</title>
-<?php include('container.php');?>
+</head>
+<body>
 <div class="container">		
 	<h2>Sistema de chat en vivo con Ajax, PHP y MySQL</h1>		
 	<div class="row">
