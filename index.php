@@ -109,12 +109,8 @@ include('header.php');
 					</div>
 				</div>
 			</div>
-		<?php } else {	 ?>
-			<br>
-			<br>
-			<strong><a href="login.php">
-					<h3>Acceder al Chat</h3>
-				</a></strong>
-		<?php } ?>
+		<?php } else {
+			header("location:login.php");
+		} ?>
 	</div>
 	<?php include('footer.php'); ?>
