@@ -5,6 +5,7 @@ if (!empty($_SESSION['username'])) {
 }
 $loginError = '';
 $loginMessage = '';
+//Validar logueo
 if (!empty($_POST['username']) && !empty($_POST['pwd'])) {
     include('Chat.php');
     $chat = new Chat();
@@ -25,7 +26,8 @@ if (!empty($_POST['username']) && !empty($_POST['pwd'])) {
     }
 }
 
-if (!empty($_POST['inpEmail'])) {
+//realiza registro
+if (!empty($_POST['inpEmail']) && isset($_FILES['avatar']['name'])) {
     include('Chat.php');
     $chat = new Chat();
     $userName = $_POST['inpNombres'];
@@ -33,7 +35,17 @@ if (!empty($_POST['inpEmail'])) {
     $userFN = $_POST['inpFechaNac'];
     $userEmail = $_POST['inpEmail'];
     $userPwd = $_POST['inpPwd'];
-    $loginMessage = $chat->insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd);
+
+    //avatar
+    $tipoArchivo = $_FILES['avatar']['type'];
+    $nombreArchivo = $_FILES['avatar']['name'];
+    $tamanoArchivo = $_FILES['avatar']['size'];
+    $imagenSubida = fopen($_FILES['avatar']['tmp_name'], 'r');
+    $binariosImagen = fread($imagenSubida, $tamanoArchivo);
+    
+
+
+    $loginMessage = $chat->insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd, $binariosImagen);
 }
 
 ?>
@@ -101,7 +113,7 @@ if (!empty($_POST['inpEmail'])) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="post">
+                    <form method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <input type="text" class="form-control" name="inpNombres" placeholder="Nombre y Apellidos" required>
                         </div>
@@ -117,6 +129,10 @@ if (!empty($_POST['inpEmail'])) {
                         </div>
                         <div class="mb-3">
                             <input type="password" class="form-control" name="inpPwd" placeholder="Contraseña" required>
+                        </div>
+                        <div class="mb-3">
+                          <label for="" class="form-label">Foto de perfil </label>
+                          <input type="file" class="form-control" name="avatar" id="avatar" placeholder="" aria-describedby="fileHelpId" required>
                         </div>
                 </div>
                 <div class="modal-footer">

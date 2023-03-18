@@ -226,7 +226,7 @@ class Chat
 		}
 	}
 
-	public function insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd)
+	public function insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd, $binariosImagen)
 	{
 		//Validando si correo y existe
 		$sqlQuery = "
@@ -239,12 +239,17 @@ class Chat
 			return $mensaje;
 		}
 
+		//encriptando pass
 		$userPwd = password_hash($userPwd, PASSWORD_DEFAULT);
-  
+
+		//limpiando binarios img
+		$binariosImagen = mysqli_escape_string($this->dbConnect, $binariosImagen);
+		
+		//insert
 		$sqlInsert = "
 			INSERT INTO `chat_users`  
 			(`userid`, `username`, `password`, `avatar`, `current_session`, `online`, `celular`, `fecha_nacimiento`, `email`, `fecha_registro`) 
-			VALUES (NUll, '" . $userName . "', '" . $userPwd . "', 'user5.jpg', '0' , '0',  '" . $userCelular . "' , '" . $userFN . "', '" . $userEmail . "', now() )";
+			VALUES (NUll, '" . $userName . "', '" . $userPwd . "', '".$binariosImagen."', '0' , '0',  '" . $userCelular . "' , '" . $userFN . "', '" . $userEmail . "', now() )";
 			$result = mysqli_query($this->dbConnect, $sqlInsert);
 		if (!$result) {
 			return ('Error in query: ' . mysqli_error($this->dbConnect));
