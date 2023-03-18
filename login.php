@@ -44,8 +44,12 @@ if (!empty($_POST['inpEmail']) && isset($_FILES['avatar']['name'])) {
     $binariosImagen = fread($imagenSubida, $tamanoArchivo);
     
 
-
-    $loginMessage = $chat->insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd, $binariosImagen);
+    if ($tipoArchivo == "image/jpeg" || $tipoArchivo == "image/png") {
+       $loginMessage = $chat->insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd, $binariosImagen);
+    }else{
+        $loginMessage = "<div class='alert alert-warning'>No fue posible resgistrarte, la foto de perfil debe ser jpeg o png</div>";
+    }
+    
 }
 
 ?>

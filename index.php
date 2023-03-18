@@ -24,7 +24,7 @@ include('header.php');
 							$currentSession = '';
 							foreach ($loggedUser as $user) {
 								$currentSession = $user['current_session'];
-								echo '<img id="profile-img" src="userpics/' . $user['avatar'] . '" class="online" alt="" />';
+								echo '<img id="profile-img" src="data:image/png;base64, '.base64_encode($user['avatar']).' " class="online" alt="" />';
 								echo  '<p>' . $user['username'] . '</p>';
 								echo '<i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>';
 								echo '<div id="status-options">';
@@ -62,7 +62,7 @@ include('header.php');
 								echo '<li id="' . $user['userid'] . '" class="contact ' . $activeUser . '" data-touserid="' . $user['userid'] . '" data-tousername="' . $user['username'] . '">';
 								echo '<div class="wrap">';
 								echo '<span id="status_' . $user['userid'] . '" class="contact-status ' . $status . '"></span>';
-								echo '<img src="userpics/' . $user['avatar'] . '" alt="" />';
+								echo '<img src="data:image/png;base64, '.base64_encode($user['avatar']).' " alt="" />';
 								echo '<div class="meta">';
 								echo '<p class="name">' . $user['username'] . '<span id="unread_' . $user['userid'] . '" class="unread">' . $chat->getUnreadMessageCount($user['userid'], $_SESSION['userid']) . '</span></p>';
 								echo '<p class="preview"><span id="isTyping_' . $user['userid'] . '" class="isTyping"></span></p>';
@@ -83,7 +83,7 @@ include('header.php');
 							<?php
 							$userDetails = $chat->getUserDetails($currentSession);
 							foreach ($userDetails as $user) {
-								echo '<img src="userpics/' . $user['avatar'] . '" alt="" />';
+								echo '<img src="data:image/png;base64, '.base64_encode($user['avatar']).' " alt="" />';
 								echo '<p>' . $user['username'] . '</p>';
 								echo '<div class="social-media">';
 								echo '<i class="fa fa-facebook" aria-hidden="true"></i>';
