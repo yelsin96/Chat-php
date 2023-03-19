@@ -25,7 +25,7 @@ include('header.php');
 							foreach ($loggedUser as $user) {
 								$currentSession = $user['current_session'];
 								echo '<img id="profile-img" src="data:image/png;base64, '.base64_encode($user['avatar']).' " class="online" alt="" />';
-								echo  '<p>' . $user['username'] . '</p>';
+								echo  '<p class="d-none d-sm-block">' . $user['username'] . '</p>';
 								echo '<i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>';
 								echo '<div id="status-options">';
 								echo '<ul>';
@@ -42,10 +42,10 @@ include('header.php');
 							echo '</div>';
 							?>
 						</div>
-						<div id="search">
+						<!-- <div id="search">
 							<label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
 							<input type="text" placeholder="Buscar Contactos..." />
-						</div>
+						</div> -->
 						<div id="contacts">
 							<?php
 							echo '<ul>';
@@ -64,7 +64,7 @@ include('header.php');
 								echo '<span id="status_' . $user['userid'] . '" class="contact-status ' . $status . '"></span>';
 								echo '<img src="data:image/png;base64, '.base64_encode($user['avatar']).' " alt="" />';
 								echo '<div class="meta">';
-								echo '<p class="name">' . $user['username'] . '<span id="unread_' . $user['userid'] . '" class="unread">' . $chat->getUnreadMessageCount($user['userid'], $_SESSION['userid']) . '</span></p>';
+								echo '<p class="name d-none d-sm-block">' . $user['username'] . '<span id="unread_' . $user['userid'] . '" class="unread">' . $chat->getUnreadMessageCount($user['userid'], $_SESSION['userid']) . '</span></p>';
 								echo '<p class="preview"><span id="isTyping_' . $user['userid'] . '" class="isTyping"></span></p>';
 								echo '</div>';
 								echo '</div>';
@@ -72,10 +72,6 @@ include('header.php');
 							}
 							echo '</ul>';
 							?>
-						</div>
-						<div id="bottom-bar">
-							<button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Agregar Contactos</span></button>
-							<button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Configuracion</span></button>
 						</div>
 					</div>
 					<div class="content" id="content">
@@ -85,11 +81,6 @@ include('header.php');
 							foreach ($userDetails as $user) {
 								echo '<img src="data:image/png;base64, '.base64_encode($user['avatar']).' " alt="" />';
 								echo '<p>' . $user['username'] . '</p>';
-								echo '<div class="social-media">';
-								echo '<i class="fa fa-facebook" aria-hidden="true"></i>';
-								echo '<i class="fa fa-twitter" aria-hidden="true"></i>';
-								echo '<i class="fa fa-instagram" aria-hidden="true"></i>';
-								echo '</div>';
 							}
 							?>
 						</div>

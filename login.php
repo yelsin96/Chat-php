@@ -58,10 +58,10 @@ if (!empty($_POST['inpEmail']) && isset($_FILES['avatar']['name'])) {
 if (!empty($_POST['inpPwdRecuperar'])) {
     include('Chat.php');
     $chat = new Chat();
-    
+
     $userEmail = $_POST['inpEmailRecuperar2'];
     $userPwd = $_POST['inpPwdRecuperar'];
-    $loginMessage = $chat->updatePwdUser($userEmail,$userPwd);
+    $loginMessage = $chat->updatePwdUser($userEmail, $userPwd);
 }
 
 
@@ -79,7 +79,7 @@ if (!empty($_POST['inpPwdRecuperar'])) {
 </head>
 
 <body>
-<?php
+    <?php
     if (!empty($_POST['inpEmailRecuperar'])) {
         include('Chat.php');
         $chat = new Chat();
@@ -88,15 +88,16 @@ if (!empty($_POST['inpPwdRecuperar'])) {
         $userPregunta2 = $_POST['inpPregunta2R'];
         $userPregunta3 = $_POST['inpPregunta3R'];
         $loginMessage = $chat->recuperarUser($userEmail, $userPregunta1, $userPregunta2, $userPregunta3);
-        $recuperar = true;
-        echo "<script>";
-        echo "$( document ).ready(function() {";
-        echo "        $('#modalCambioPwd').modal('toggle')";
-        echo "});";
-        echo "</script>";
+        if ($loginMessage == "<div class='alert alert-success'>Las respuestas fueron correctas, puedes realizar cambio de contraseña</div>") {
+            echo "<script>";
+            echo "$( document ).ready(function() {";
+            echo "        $('#modalCambioPwd').modal('toggle')";
+            echo "});";
+            echo "</script>";
+        }
     }
-    
-?>
+
+    ?>
     <div class="container">
         <div class="card text-center mt-5">
             <div class="card-body">
@@ -242,9 +243,9 @@ if (!empty($_POST['inpPwdRecuperar'])) {
                     <form method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <input type="password" class="form-control" name="inpPwdRecuperar" placeholder="Contraseña nueva" required>
-                            <input type="hidden" name="inpEmailRecuperar2" value="<?=$_POST['inpEmailRecuperar']?>">
+                            <input type="hidden" name="inpEmailRecuperar2" value="<?= $_POST['inpEmailRecuperar'] ?>">
                         </div>
-                        
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -257,7 +258,7 @@ if (!empty($_POST['inpPwdRecuperar'])) {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" crossorigin="anonymous"></script>
-    
+
 </body>
 
 </html>
