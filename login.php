@@ -5,6 +5,7 @@ if (!empty($_SESSION['username'])) {
 }
 $loginError = '';
 $loginMessage = '';
+$recuperar = false;
 //Validar logueo
 if (!empty($_POST['username']) && !empty($_POST['pwd'])) {
     include('Chat.php');
@@ -35,6 +36,9 @@ if (!empty($_POST['inpEmail']) && isset($_FILES['avatar']['name'])) {
     $userFN = $_POST['inpFechaNac'];
     $userEmail = $_POST['inpEmail'];
     $userPwd = $_POST['inpPwd'];
+    $userPregunta1 = $_POST['inpPregunta1'];
+    $userPregunta2 = $_POST['inpPregunta2'];
+    $userPregunta3 = $_POST['inpPregunta3'];
 
     //avatar
     $tipoArchivo = $_FILES['avatar']['type'];
@@ -42,15 +46,24 @@ if (!empty($_POST['inpEmail']) && isset($_FILES['avatar']['name'])) {
     $tamanoArchivo = $_FILES['avatar']['size'];
     $imagenSubida = fopen($_FILES['avatar']['tmp_name'], 'r');
     $binariosImagen = fread($imagenSubida, $tamanoArchivo);
-    
+
 
     if ($tipoArchivo == "image/jpeg" || $tipoArchivo == "image/png") {
-       $loginMessage = $chat->insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd, $binariosImagen);
-    }else{
+        $loginMessage = $chat->insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd, $binariosImagen, $userPregunta1, $userPregunta2, $userPregunta3);
+    } else {
         $loginMessage = "<div class='alert alert-warning'>No fue posible resgistrarte, la foto de perfil debe ser jpeg o png</div>";
     }
-    
 }
+
+if (!empty($_POST['inpPwdRecuperar'])) {
+    include('Chat.php');
+    $chat = new Chat();
+    
+    $userEmail = $_POST['inpEmailRecuperar2'];
+    $userPwd = $_POST['inpPwdRecuperar'];
+    $loginMessage = $chat->updatePwdUser($userEmail,$userPwd);
+}
+
 
 ?>
 
@@ -62,9 +75,28 @@ if (!empty($_POST['inpEmail']) && isset($_FILES['avatar']['name'])) {
     <title>Login</title>
     <link rel="stylesheet" href="./css/styleLogin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
 </head>
 
 <body>
+<?php
+    if (!empty($_POST['inpEmailRecuperar'])) {
+        include('Chat.php');
+        $chat = new Chat();
+        $userEmail = $_POST['inpEmailRecuperar'];
+        $userPregunta1 = $_POST['inpPregunta1R'];
+        $userPregunta2 = $_POST['inpPregunta2R'];
+        $userPregunta3 = $_POST['inpPregunta3R'];
+        $loginMessage = $chat->recuperarUser($userEmail, $userPregunta1, $userPregunta2, $userPregunta3);
+        $recuperar = true;
+        echo "<script>";
+        echo "$( document ).ready(function() {";
+        echo "        $('#modalCambioPwd').modal('toggle')";
+        echo "});";
+        echo "</script>";
+    }
+    
+?>
     <div class="container">
         <div class="card text-center mt-5">
             <div class="card-body">
@@ -94,7 +126,7 @@ if (!empty($_POST['inpEmail']) && isset($_FILES['avatar']['name'])) {
                             </div>
 
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="#!" class="text-body">Olvido su contraseña</a>
+                                <a href="#!" class="text-body" data-bs-toggle="modal" data-bs-target="#modalRecuperar">Olvido su contraseña</a>
                             </div>
 
                             <div class="text-center text-lg-start mt-4 pt-2">
@@ -135,8 +167,20 @@ if (!empty($_POST['inpEmail']) && isset($_FILES['avatar']['name'])) {
                             <input type="password" class="form-control" name="inpPwd" placeholder="Contraseña" required>
                         </div>
                         <div class="mb-3">
-                          <label for="" class="form-label">Foto de perfil </label>
-                          <input type="file" class="form-control" name="avatar" id="avatar" placeholder="" aria-describedby="fileHelpId" required>
+                            <label for="" class="form-label">Foto de perfil </label>
+                            <input type="file" class="form-control" name="avatar" id="avatar" placeholder="" aria-describedby="fileHelpId" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pregunta de seguridad 1</label>
+                            <input type="text" class="form-control" name="inpPregunta1" placeholder="¿Cuál es su comida favorita?" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pregunta de seguridad 2</label>
+                            <input type="text" class="form-control" name="inpPregunta2" placeholder="¿Cuál era el nombre de su héroe de la infancia?" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pregunta de seguridad 3</label>
+                            <input type="text" class="form-control" name="inpPregunta3" placeholder="¿Cuál era el nombre de su primera mascota?" required>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -148,9 +192,72 @@ if (!empty($_POST['inpEmail']) && isset($_FILES['avatar']['name'])) {
             </div>
         </div>
     </div>
+
+    <!-- Modal recuperar-->
+    <div class="modal fade" id="modalRecuperar" tabindex="-1" aria-labelledby="modalRecuperarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalRecuperarLabel">Olvidaste tu contraseña?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Correo registrado:</label>
+                            <input type="email" class="form-control" name="inpEmailRecuperar" placeholder="Correo electronico" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pregunta de seguridad 1</label>
+                            <input type="text" class="form-control" name="inpPregunta1R" placeholder="¿Cuál es su comida favorita?" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pregunta de seguridad 2</label>
+                            <input type="text" class="form-control" name="inpPregunta2R" placeholder="¿Cuál era el nombre de su héroe de la infancia?" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pregunta de seguridad 3</label>
+                            <input type="text" class="form-control" name="inpPregunta3R" placeholder="¿Cuál era el nombre de su primera mascota?" required>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <!-- <button type="submit" class="btn btn-primary">Registrarse</button> -->
+                    <input type="submit" value="Recuperar contraseña" class="btn btn-primary">
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal cambio contraseña-->
+    <div class="modal fade" id="modalCambioPwd" tabindex="-1" aria-labelledby="modalCambioPwdLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalCambioPwdLabel">Contraseña nueva</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <input type="password" class="form-control" name="inpPwdRecuperar" placeholder="Contraseña nueva" required>
+                            <input type="hidden" name="inpEmailRecuperar2" value="<?=$_POST['inpEmailRecuperar']?>">
+                        </div>
+                        
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <!-- <button type="submit" class="btn btn-primary">Registrarse</button> -->
+                    <input type="submit" value="Recuperar contraseña" class="btn btn-primary">
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" crossorigin="anonymous"></script>
-
-
+    
 </body>
 
 </html>

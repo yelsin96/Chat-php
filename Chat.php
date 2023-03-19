@@ -1,4 +1,7 @@
 <?php
+
+use LDAP\Result;
+
 class Chat
 {
 	private $host  = 'localhost';
@@ -47,7 +50,7 @@ class Chat
 		$sqlQuery = "
 			SELECT *
 			FROM " . $this->chatUsersTable . " 
-			WHERE email='" . $username."'";
+			WHERE email='" . $username . "'";
 		return  $this->getData($sqlQuery);
 	}
 	public function chatUsers($userid)
@@ -119,10 +122,10 @@ class Chat
 			$user_name = '';
 			if ($chat["sender_userid"] == $from_user_id) {
 				$conversation .= '<li class="sent">';
-				$conversation .= '<img width="22px" height="22px" src="userpics/' . $fromUserAvatar . '" alt="" />';
+				$conversation .= '<img width="22px" height="22px" src="data:image/png;base64, ' . base64_encode($fromUserAvatar) . ' " alt="" />';
 			} else {
 				$conversation .= '<li class="replies">';
-				$conversation .= '<img width="22px" height="22px" src="userpics/' . $toUserAvatar . '" alt="" />';
+				$conversation .= '<img width="22px" height="22px" src="data:image/png;base64, ' . base64_encode($toUserAvatar) . ' " alt="" />';
 			}
 			$conversation .= '<p>' . $chat["message"] . '</p>';
 			$conversation .= '</li>';
@@ -136,7 +139,7 @@ class Chat
 		$toUserAvatar = '';
 		foreach ($userDetails as $user) {
 			$toUserAvatar = $user['avatar'];
-			$userSection = '<img src="userpics/' . $user['avatar'] . '" alt="" />
+			$userSection = '<img src="data:image/png;base64, ' . base64_encode($user['avatar']) . ' " alt="" />
 				<p>' . $user['username'] . '</p>
 				<div class="social-media">
 					<i class="fa fa-facebook" aria-hidden="true"></i>
@@ -226,7 +229,7 @@ class Chat
 		}
 	}
 
-	public function insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd, $binariosImagen)
+	public function insertUser($userName, $userCelular, $userFN, $userEmail, $userPwd, $binariosImagen, $userPregunta1, $userPregunta2, $userPregunta3)
 	{
 		//Validando si correo y existe
 		$sqlQuery = "
@@ -241,21 +244,65 @@ class Chat
 
 		//encriptando pass
 		$userPwd = password_hash($userPwd, PASSWORD_DEFAULT);
+		$userPregunta1 = password_hash($userPregunta1, PASSWORD_DEFAULT);
+		$userPregunta2 = password_hash($userPregunta2, PASSWORD_DEFAULT);
+		$userPregunta3 = password_hash($userPregunta3, PASSWORD_DEFAULT);
 
 		//limpiando binarios img
 		$binariosImagen = mysqli_escape_string($this->dbConnect, $binariosImagen);
-		
+
 		//insert
 		$sqlInsert = "
 			INSERT INTO `chat_users`  
-			(`userid`, `username`, `password`, `avatar`, `current_session`, `online`, `celular`, `fecha_nacimiento`, `email`, `fecha_registro`) 
-			VALUES (NUll, '" . $userName . "', '" . $userPwd . "', '".$binariosImagen."', '0' , '0',  '" . $userCelular . "' , '" . $userFN . "', '" . $userEmail . "', now() )";
-			$result = mysqli_query($this->dbConnect, $sqlInsert);
+			(`userid`, `username`, `password`, `avatar`, `current_session`, `online`, `celular`, `fecha_nacimiento`, `email`, `fecha_registro`, `pregunta_1`, `pregunta_2`, `pregunta_3`) 
+			VALUES (NUll, '" . $userName . "', '" . $userPwd . "', '" . $binariosImagen . "', '0' , '0',  '" . $userCelular . "' , '" . $userFN . "', '" . $userEmail . "', now() , '" . $userPregunta1 . "', '" . $userPregunta2 . "', '" . $userPregunta3 . "')";
+		$result = mysqli_query($this->dbConnect, $sqlInsert);
 		if (!$result) {
 			return ('Error in query: ' . mysqli_error($this->dbConnect));
 		} else {
 			$mensaje = "<div class='alert alert-success'>Se registro exitosamente, ingresa ahora con tu correo y contraseña.</div>";
 			return $mensaje;
 		}
+	}
+
+	public function recuperarUser($userEmail, $userPregunta1, $userPregunta2, $userPregunta3)
+	{
+		$sqlQuery = "
+			SELECT * FROM `chat_users` 
+			WHERE email = '$userEmail'";
+		$result =  $this->getNumRows($sqlQuery);
+
+		if ($result == 0) {
+			$mensaje = "<div class='alert alert-warning'>El usuario no esta esta registrado</div>";
+			return $mensaje;
+		}
+		$result =  $this->getData($sqlQuery);
+		if (password_verify($userPregunta1, $result[0]['pregunta_1']) && password_verify($userPregunta2, $result[0]['pregunta_2']) && password_verify($userPregunta3, $result[0]['pregunta_3'] )) {
+			$mensaje = "<div class='alert alert-success'>Las respuestas fueron correctas, puedes realizar cambio de contraseña</div>";
+			
+			return $mensaje;	
+		} else {
+			$mensaje = "<div class='alert alert-danger'>No fue posible recuperar contraseña</div>";
+			return $mensaje;
+		}
+
+
+	}
+
+	public function updatePwdUser($userEmail,$userPwd){
+		$userPwd = password_hash($userPwd, PASSWORD_DEFAULT);
+		$sqlUpdate = "
+			UPDATE `chat_users` 
+			SET password = '" . $userPwd . "' 
+			WHERE email = '" . $userEmail . "'";
+		$result = mysqli_query($this->dbConnect, $sqlUpdate);
+
+		if (!$result) {
+			return ('Error in query: ' . mysqli_error($this->dbConnect));
+		} else {
+			$mensaje = "<div class='alert alert-success'>Se cambio exitosamente la contraseña, ingresa ahora con tu correo y contraseña nueva.</div>";
+			return $mensaje;
+		}
+
 	}
 }
