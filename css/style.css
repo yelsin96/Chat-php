@@ -614,7 +614,7 @@ body{
 #frame .content .message-input {
   position: absolute;
   bottom: 0;
-  width: 100%;
+  width: 98%;
   z-index: 99;
 }
 #frame .content .message-input .wrap {

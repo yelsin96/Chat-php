@@ -94,9 +94,35 @@ if (!empty($_POST['inpPwdRecuperar'])) {
             echo "        $('#modalCambioPwd').modal('toggle')";
             echo "});";
             echo "</script>";
-        }
-    }
+        } ?>
 
+        <!-- Modal cambio contraseña-->
+        <div class="modal fade" id="modalCambioPwd" tabindex="-1" aria-labelledby="modalCambioPwdLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalCambioPwdLabel">Contraseña nueva</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input type="password" class="form-control" name="inpPwdRecuperar" placeholder="Contraseña nueva" required>
+                                <input type="hidden" name="inpEmailRecuperar2" value="<?= $_POST['inpEmailRecuperar'] ?>">
+                            </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <!-- <button type="submit" class="btn btn-primary">Registrarse</button> -->
+                        <input type="submit" value="Recuperar contraseña" class="btn btn-primary">
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <?php
+    }
     ?>
     <div class="container">
         <div class="card text-center mt-5">
@@ -220,32 +246,6 @@ if (!empty($_POST['inpPwdRecuperar'])) {
                             <label class="form-label">Pregunta de seguridad 3</label>
                             <input type="text" class="form-control" name="inpPregunta3R" placeholder="¿Cuál era el nombre de su primera mascota?" required>
                         </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <!-- <button type="submit" class="btn btn-primary">Registrarse</button> -->
-                    <input type="submit" value="Recuperar contraseña" class="btn btn-primary">
-                </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal cambio contraseña-->
-    <div class="modal fade" id="modalCambioPwd" tabindex="-1" aria-labelledby="modalCambioPwdLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalCambioPwdLabel">Contraseña nueva</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="post" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <input type="password" class="form-control" name="inpPwdRecuperar" placeholder="Contraseña nueva" required>
-                            <input type="hidden" name="inpEmailRecuperar2" value="<?= $_POST['inpEmailRecuperar'] ?>">
-                        </div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
