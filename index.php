@@ -4,6 +4,9 @@ include('header.php');
 include('Chat.php');
 $chat = new Chat();
 $loginMessage = '';
+$loggedUser = $chat->getUserDetails($_SESSION['userid']);
+$currentSession = '';
+$currentSession = $loggedUser[0]['current_session'];
 
 if (!empty($_POST['modificar'])) {
 	$userName = $_POST['inpNombres'];
@@ -40,24 +43,101 @@ if (!empty($_POST['modificar'])) {
 			<?php if ($loginMessage) {
 				echo $loginMessage;
 			} ?>
-			
-			
-			
-			
+
+			<div class="d-block d-sm-none">
+				<nav class="navbar navbar-dark bg-dark fixed-top" style="left: auto;">
+					<div class="container-fluid">
+						<a class="navbar-brand" href="#">CHAT</a>
+						<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+							<span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+							<div class="offcanvas-header">
+								<h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Perfil-Mensajes</h5>
+								<button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+							</div>
+							<div class="offcanvas-body">
+								<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+									<li class="nav-item">
+										<div class="accordion accordion-flush" id="accordionFlushExample">
+											<div class="accordion-item">
+												<h2 class="accordion-header" id="flush-headingOne">
+													<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+														<?php
+
+														echo '<img id="profile-img" src="data:image/png;base64, ' . base64_encode($loggedUser[0]['avatar']) . ' " class="rounded-circle" style="height: 45px;" alt="" />';
+														echo  '<spam>' . $loggedUser[0]['username'] . '</spam>';
+														?>
+													</button>
+												</h2>
+												<div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+													<div class="accordion-body">
+														<div class="list-group">
+															<a href="logout.php" data-bs-toggle="modal" data-bs-target="#modalRegistro" style="text-decoration:none"><button type="button" class="list-group-item list-group-item-action">
+																	Mi perfil
+																</button></a>
+															<a href="logout.php" style="text-decoration:none"><button type="button" class="list-group-item list-group-item-action">Salir</button>
+															</a>
+
+
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</li>
+									<li class="nav-item mt-4">
+										Chats
+									</li>
+									<li class="nav-item">
+										<div id="contacts">
+											<?php
+											echo '<ul>';
+											$chatUsers = $chat->chatUsers($_SESSION['userid']);
+											foreach ($chatUsers as $user) {
+												$status = 'offline';
+												if ($user['online']) {
+													$status = 'online';
+												}
+												$activeUser = '';
+												if ($user['userid'] == $currentSession) {
+													$activeUser = "active";
+												}
+												echo '<li id="' . $user['userid'] . '" class="contact ' . $activeUser . '" data-touserid="' . $user['userid'] . '" data-tousername="' . $user['username'] . '" data-bs-dismiss="offcanvas" aria-label="Close">';
+												echo '<div class="wrap">';
+												echo '<span id="status_' . $user['userid'] . '" class="contact-status ' . $status . '"></span>';
+												echo '<img src="data:image/png;base64, ' . base64_encode($user['avatar']) . '" class="rounded-circle" style="height: 45px;" alt="" />';
+												echo '<div class="meta">';
+												echo '<p>' . $user['username'] . '<span id="unread_' . $user['userid'] . '" class="unread">' . $chat->getUnreadMessageCount($user['userid'], $_SESSION['userid']) . '</span></p>';
+												echo '<p class="preview"><span id="isTyping_' . $user['userid'] . '" class="isTyping"></span></p>';
+												echo '</div>';
+												echo '</div>';
+												echo '</li>';
+											}
+											echo '</ul>';
+											?>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</nav>
+			</div>
+
+
 			<div class="chat">
 				<div id="frame">
 
 					<div class="row" style="height: 100%;">
-						<div id="sidepanel" class="col-1 col-sm-3 col-md-4 ">
+						<div id="sidepanel" class="col-1 col-sm-3 col-md-4 d-none d-sm-block">
 
 							<div class="accordion accordion-flush" id="accordionFlushExample">
 								<div class="accordion-item">
 									<h2 class="accordion-header" id="flush-headingOne">
 										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
 											<?php
-											$loggedUser = $chat->getUserDetails($_SESSION['userid']);
-											$currentSession = '';
-											$currentSession = $loggedUser[0]['current_session'];
+
 											echo '<img id="profile-img" src="data:image/png;base64, ' . base64_encode($loggedUser[0]['avatar']) . ' " class="rounded-circle" style="height: 45px;" alt="" />';
 											echo  '<spam>' . $loggedUser[0]['username'] . '</spam>';
 											?>
@@ -112,7 +192,7 @@ if (!empty($_POST['modificar'])) {
 								?>
 							</div>
 						</div>
-						<div class="content col-11 col-sm-9 col-md-8  " id="content">
+						<div class="content col-12 col-sm-9 col-md-8  " id="content">
 							<div class="contact-profile" id="userSection">
 								<?php
 								$userDetails = $chat->getUserDetails($currentSession);

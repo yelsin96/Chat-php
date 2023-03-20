@@ -140,12 +140,7 @@ class Chat
 		foreach ($userDetails as $user) {
 			$toUserAvatar = $user['avatar'];
 			$userSection = '<img src="data:image/png;base64, ' . base64_encode($user['avatar']) . ' " alt="" />
-				<p>' . $user['username'] . '</p>
-				<div class="social-media">
-					<i class="fa fa-facebook" aria-hidden="true"></i>
-					<i class="fa fa-twitter" aria-hidden="true"></i>
-					 <i class="fa fa-instagram" aria-hidden="true"></i>
-				</div>';
+				<p>' . $user['username'] . '</p>';
 		}
 		// get user conversation
 		$conversation = $this->getUserChat($from_user_id, $to_user_id);
