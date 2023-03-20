@@ -1,12 +1,12 @@
 $(document).ready(function(){
-	setInterval(function(){
-		updateUserList();	
-		updateUnreadMessageCount();	
-	}, 60000);	
-	setInterval(function(){
-		showTypingStatus();
-		updateUserChat();			
-	}, 5000);
+	// setInterval(function(){
+	// 	updateUserList();	
+	// 	updateUnreadMessageCount();	
+	// }, 60000);	
+	// setInterval(function(){
+	// 	showTypingStatus();
+	// 	updateUserChat();			
+	// }, 5000);
 	$(".messages").animate({ 
 		scrollTop: $(document).height() 
 	}, "fast");

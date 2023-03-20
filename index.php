@@ -40,6 +40,10 @@ if (!empty($_POST['modificar'])) {
 			<?php if ($loginMessage) {
 				echo $loginMessage;
 			} ?>
+			
+			
+			
+			
 			<div class="chat">
 				<div id="frame">
 
