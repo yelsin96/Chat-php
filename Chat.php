@@ -277,19 +277,18 @@ class Chat
 			return $mensaje;
 		}
 		$result =  $this->getData($sqlQuery);
-		if (password_verify($userPregunta1, $result[0]['pregunta_1']) && password_verify($userPregunta2, $result[0]['pregunta_2']) && password_verify($userPregunta3, $result[0]['pregunta_3'] )) {
+		if (password_verify($userPregunta1, $result[0]['pregunta_1']) && password_verify($userPregunta2, $result[0]['pregunta_2']) && password_verify($userPregunta3, $result[0]['pregunta_3'])) {
 			$mensaje = "<div class='alert alert-success'>Las respuestas fueron correctas, puedes realizar cambio de contraseña</div>";
-			
-			return $mensaje;	
+
+			return $mensaje;
 		} else {
 			$mensaje = "<div class='alert alert-danger'>No fue posible recuperar contraseña</div>";
 			return $mensaje;
 		}
-
-
 	}
 
-	public function updatePwdUser($userEmail,$userPwd){
+	public function updatePwdUser($userEmail, $userPwd)
+	{
 		$userPwd = password_hash($userPwd, PASSWORD_DEFAULT);
 		$sqlUpdate = "
 			UPDATE `chat_users` 
@@ -303,6 +302,42 @@ class Chat
 			$mensaje = "<div class='alert alert-success'>Se cambio exitosamente la contraseña, ingresa ahora con tu correo y contraseña nueva.</div>";
 			return $mensaje;
 		}
+	}
 
+	function obtener_edad($fecha_nacimiento)
+	{
+		$nacimiento = new DateTime($fecha_nacimiento);
+		$ahora = new DateTime(date("Y-m-d"));
+		$diferencia = $ahora->diff($nacimiento);
+		return $diferencia->format("%y");
+	}
+
+	public function updateUser($userName, $userCelular, $userFN, $userPwd, $userEmail, $binariosImagen)
+	{
+		$sqlUserUpdate = "UPDATE `chat_users`  ";
+		$sqlUserUpdate .= "SET username = '" . $userName . "', ";
+		$sqlUserUpdate .= "celular = '" . $userCelular . "', ";
+		$sqlUserUpdate .= "fecha_nacimiento = '" . $userFN . "'";
+		if ($userPwd != false) {
+			$userPwd = password_hash($userPwd, PASSWORD_DEFAULT);
+			$sqlUserUpdate .= ", password = '" . $userPwd . "' ";
+		}
+		if ($binariosImagen != false) {
+			//limpiando binarios img
+			$binariosImagen = mysqli_escape_string($this->dbConnect, $binariosImagen);
+			$sqlUserUpdate .= ", avatar = '" . $binariosImagen . "' ";
+		}
+		$sqlUserUpdate .= "WHERE email = '" . $userEmail . "'";
+
+		$result = mysqli_query($this->dbConnect, $sqlUserUpdate);
+		if (!$result) {
+			return ('Error in query: ' . mysqli_error($this->dbConnect));
+		} else {
+			$mensaje = '<div class="alert alert-success alert-dismissible fade show" role="alert">
+			<strong>Se cambio exitosamente </strong>la informacion.
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		  	</div>';
+			return $mensaje;
+		}
 	}
 }
